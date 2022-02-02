@@ -1,6 +1,6 @@
 import { Controller, EmailValidator, HttpRequest, HttpResponse } from './login-protocols'
 import { InvalidParamError, MissingParamError } from '../../errors'
-import { badRequest } from '../../helpers/http-helper'
+import { badRequest, serverError } from '../../helpers/http-helper'
 
 export class LoginController implements Controller {
   private readonly emailValidator: EmailValidator
@@ -10,40 +10,19 @@ export class LoginController implements Controller {
   }
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    if (!httpRequest.body.email) {
-      return new Promise(resolve => resolve(badRequest(new MissingParamError('email'))))
+    try {
+      const requiredFields = ['email', 'password']
+      for (const field of requiredFields) {
+        if (!httpRequest.body[field]) {
+          return badRequest(new MissingParamError(field))
+        }
+      }
+      const isValid = this.emailValidator.isValid(httpRequest.body.email)
+      if (!isValid) {
+        return badRequest(new InvalidParamError('email'))
+      }
+    } catch (error) {
+      return serverError(error)
     }
-    if (!httpRequest.body.password) {
-      return new Promise(resolve => resolve(badRequest(new MissingParamError('password'))))
-    }
-
-    const isValid = this.emailValidator.isValid(httpRequest.body.email)
-    if (!isValid) {
-      return new Promise(resolve => resolve(badRequest(new InvalidParamError('email'))))
-    }
-    // try {
-    //   const requiredFields = ['email', 'password']
-    //   for (const field of requiredFields) {
-    //     if (!httpRequest.body[field]) {
-    //       return badRequest(new MissingParamError(field))
-    //     }
-    //   }
-    //   const { name, email, password, passwordConfirmation } = httpRequest.body
-    //   const account = await this.addAccount.add({
-    //     name,
-    //     email,
-    //     password
-    //   })
-    //   const isValid = this.emailValidator.isValid(email)
-    //   if (!isValid) {
-    //     return badRequest(new InvalidParamError('email'))
-    //   }
-    //   if (password !== passwordConfirmation) {
-    //     return badRequest(new InvalidParamError('passwordConfirmation'))
-    //   }
-    //   return ok(account)
-    // } catch (error) {
-    //   return serverError(error)
-    // }
   }
 }
