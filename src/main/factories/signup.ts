@@ -8,7 +8,6 @@ import { LogControllerDecorator } from '../decorators/log'
 import { Controller } from '@/presentation/protocols'
 import { makeSignUpValidation } from './signup-validation'
 
-
 export const makeSignUpController = (): Controller => {
   const salt = 12
   const emailValidatorAdapter = new EmailValidatorAdapter()
