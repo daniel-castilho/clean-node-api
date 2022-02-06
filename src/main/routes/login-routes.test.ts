@@ -28,5 +28,5 @@ describe('Login Routes', () => {
         })
         .expect(200)
     })
-  }
+  })
 })
