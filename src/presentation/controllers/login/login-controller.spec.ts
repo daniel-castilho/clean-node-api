@@ -1,6 +1,6 @@
-import { LoginController } from './login'
+import { LoginController } from './login-controller'
 import { MissingParamError } from '../../errors'
-import { Authentication, AuthenticationModel, HttpRequest, Validation } from './login-protocols'
+import { Authentication, AuthenticationModel, HttpRequest, Validation } from './login-controller-protocols'
 import { ok, unauthorized, serverError, badRequest } from '../../helpers/http/http-helper'
 
 const makeAuthentication = (): Authentication => {
