@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 services:
   mongo:
     container_name: mongo-container
@@ -8,17 +8,25 @@ services:
       - ./data:/data/db
     ports:
       - "27016:27017"
+    networks:
+      - my_network
   api:
     container_name: api-container
     build: .
     image: clean-node-api
     restart: always
-    command: npm run start
+    command: npm run debug
     environment:
       - MONGO_URL=mongodb://mongo:27017/clean-node-api
     volumes:
       - ./dist/:/daniel/src/clean-node-api/dist/
+      - ./package.json:/daniel/src/clean-node-api/package.json
     ports:
       - "5050:5050"
-    links:
-      - mongo
+      - "9229:9229"
+    networks:
+      - my_network
+networks:
+  my_network:
+    name: my_network
+    driver: bridge
